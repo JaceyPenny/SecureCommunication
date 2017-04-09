@@ -9,13 +9,14 @@ public class Main {
 
         while (communicator == null) {
             boolean isServerOpen = Communicator.isServerOpen();
+//            boolean isServerOpen = true;
 
             if (isServerOpen) {
                 Console.d("Other machine is server. Connecting...");
 
                 communicator = Communicator.startClient();
 
-                Console.d("Connected to " + communicator.getSocket().getInetAddress().toString());
+                Console.d("Connected to " + communicator.getSocket().getInetAddress().toString() + ":" + communicator.getSocket().getPort());
             } else {
                 Console.d("Server is not open. Are you the server (y/n)? ");
                 String input = Console.getLine();
@@ -30,21 +31,34 @@ public class Main {
 
                     Console.d("Waiting for client connection.... ");
                     communicator.waitForConnection();
-                    Console.d("Connected to " + communicator.getSocket().getInetAddress().toString());
+                    Console.d("Connected to " + communicator.getSocket().getInetAddress().toString() + ":" + communicator.getSocket().getPort());
                 }
             }
         }
 
-        communicator.waitForConnection();
-        communicator.sendBytes("Testing".getBytes());
-        byte[] result = communicator.receiveBytes();
+        // Testing Communication TODO: Remove this section
+        if (communicator.isServer()) {
+            Console.d("Sending client a hello message...");
+            communicator.sendBytes("Hello, Alice".getBytes());
 
-
-        if (result != null) {
-            Console.d(new String(result));
+            Console.d("Waiting for response...");
+            byte[] array = communicator.receiveBytes();
+            Console.d("Bytes received");
+            String received = new String(array);
+            Console.d(received);
         } else {
-            Console.d("Something went wrong...");
+            Console.d("Waiting for hello from Bob...");
+            byte[] array = communicator.receiveBytes();
+            Console.d("Received: \"" + new String(array) + "\"");
+
+            Console.d("Responding to server...");
+            communicator.sendBytes("Testing".getBytes());
         }
+        // Testing Communication TODO: Remove this section
+
+        
+
+        communicator.close();
 
     }
 }

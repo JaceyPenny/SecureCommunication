@@ -1,15 +1,19 @@
 package com.jacemcpherson;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 
 public class Communicator {
 
     public static final String SERVER_IP = "127.0.0.1";
-    public static final int SERVER_PORT = 2800;
+    public static final int SERVER_PORT = 9090;
 
     private static Communicator sCommunicator;
+
+    private static Socket sConnectedSocket;
 
     public static Communicator startServer() {
         if (sCommunicator != null && !sCommunicator.isServer()) {
@@ -53,9 +57,12 @@ public class Communicator {
 
     public static boolean isServerOpen() {
         try {
-            Socket newSocket = new Socket(SERVER_IP, SERVER_PORT);
-            // server successfully connected
-            newSocket.close();
+            if (sConnectedSocket != null && sConnectedSocket.isConnected()) {
+                return true;
+            }
+            Socket connectedSocket = new Socket(SERVER_IP, SERVER_PORT);
+            // server connected
+            sConnectedSocket = connectedSocket;
             return true;
         } catch (IOException e) {
             // server did not connect
@@ -76,33 +83,22 @@ public class Communicator {
         mIsServer = isServer;
         if (isServer) {
             mServerSocket = new ServerSocket(SERVER_PORT);
-
-            Thread socketConnectionThread = new Thread(() -> {
-                try {
-                    mSocket = mServerSocket.accept();
-                    setupBuffers();
-                } catch (IOException e) {
-                    Console.d("Could not accept connection.");
-                    mSocket = null;
-                }
-            });
-            socketConnectionThread.start();
         } else {
-            mSocket = new Socket(SERVER_IP, SERVER_PORT);
-            setupBuffers();
+            mSocket = sConnectedSocket != null ? sConnectedSocket : new Socket(SERVER_IP, SERVER_PORT);
         }
     }
 
     public void waitForConnection() {
         if (isServer()) {
-            while (mSocket == null) {
-                // do nothing...
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-
-                }
+            try {
+                mSocket = mServerSocket.accept();
+            } catch (IOException e) {
+                Console.d("Could not accept connection.");
+                Console.exception(e);
+                mSocket = null;
             }
+        } else {
+            Console.w("Could not wait for connection: Not the server");
         }
     }
 
@@ -114,13 +110,17 @@ public class Communicator {
 
     }
 
-    public void setupBuffers() {
+    public void close() {
         try {
-            Console.d("Setting up buffers");
-            mSocketReader = new BufferedReader(new InputStreamReader(mSocket.getInputStream()));
-            mSocketWriter = new PrintWriter(new OutputStreamWriter(mSocket.getOutputStream()));
+            if (mSocket != null) {
+                mSocket.close();
+            }
+
+            if (isServer()) {
+                mServerSocket.close();
+            }
         } catch (IOException e) {
-            Console.exception(e);
+
         }
     }
 
@@ -144,10 +144,11 @@ public class Communicator {
 
         if (isConnected()) {
             try {
-
-                mSocketWriter.println(bytes.length);
+                String lengthString = getLengthString(bytes.length);
+                mSocket.getOutputStream().write(lengthString.getBytes());
                 mSocket.getOutputStream().write(bytes);
-            } catch (IOException e) {
+                Console.d("Sent: %s", new String(bytes));
+            } catch (Exception e) {
                 Console.exception(e);
             }
         } else {
@@ -155,16 +156,26 @@ public class Communicator {
         }
     }
 
+    private static String getLengthString(int length) {
+        return StringUtil.padded(length, 8);
+    }
+
     public byte[] receiveBytes() {
         if (isConnected()) {
             try {
-                int length = Integer.parseInt(mSocketReader.readLine());
-                byte[] buffer = new byte[length];
-                int received = mSocket.getInputStream().read(buffer, 0, length);
-                if (received != length) {
-                    throw new RuntimeException("Error: Received fewer bytes than expected");
+                byte[] lengthInformation = new byte[8];
+                mSocket.getInputStream().read(lengthInformation, 0, 8);
+
+                int length = Integer.parseInt(new String(lengthInformation).trim());
+
+                byte[] reading = new byte[length];
+                int receivedLength = mSocket.getInputStream().read(reading, 0, length);
+
+                if (receivedLength != length) {
+                    Console.d("Lengths are different");
                 }
-                return buffer;
+
+                return reading;
             } catch (IOException | NumberFormatException e) {
                 Console.exception(e);
                 return null;
