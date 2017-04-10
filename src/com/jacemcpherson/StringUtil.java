@@ -25,4 +25,12 @@ public class StringUtil {
         Arrays.fill(spaces, repeat);
         return new String(spaces);
     }
+
+    public static String bytesToHex(byte[] in) {
+        final StringBuilder builder = new StringBuilder();
+        for(byte b : in) {
+            builder.append(String.format("%02x", b));
+        }
+        return builder.toString();
+    }
 }

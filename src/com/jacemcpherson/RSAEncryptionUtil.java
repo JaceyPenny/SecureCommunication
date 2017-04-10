@@ -8,7 +8,7 @@ import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 
-public class RSAEncryption {
+public class RSAEncryptionUtil {
 
     private static int KEY_SIZE = 2048;
 
@@ -35,7 +35,7 @@ public class RSAEncryption {
     }
 
     public static byte[] getPublicKeyEncoded() {
-        return sKeyPair.getPublic().getEncoded();
+        return getPublicKey().getEncoded();
     }
 
     public static void decodePublicKey(byte[] publicKey) {
@@ -93,7 +93,8 @@ public class RSAEncryption {
     private static void generateRsaKeyPair() {
         try {
             KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
-            generator.initialize(KEY_SIZE);
+            generator.initialize(KEY_SIZE, new SecureRandom());
+
             sKeyPair = generator.generateKeyPair();
         } catch (NoSuchAlgorithmException ex) {
             Console.d("This machine does not support RSA encryption methods.");

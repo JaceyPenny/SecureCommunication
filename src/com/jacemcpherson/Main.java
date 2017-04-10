@@ -1,5 +1,7 @@
 package com.jacemcpherson;
 
+import java.util.Base64;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -9,7 +11,6 @@ public class Main {
 
         while (communicator == null) {
             boolean isServerOpen = Communicator.isServerOpen();
-//            boolean isServerOpen = true;
 
             if (isServerOpen) {
                 Console.d("Other machine is server. Connecting...");
@@ -36,27 +37,70 @@ public class Main {
             }
         }
 
-        // Testing Communication TODO: Remove this section
-        if (communicator.isServer()) {
-            Console.d("Sending client a hello message...");
-            communicator.sendBytes("Hello, Alice".getBytes());
+        // Exchange public keys
+        communicator.exchangeRSAPublicKey();
 
-            Console.d("Waiting for response...");
-            byte[] array = communicator.receiveBytes();
-            Console.d("Bytes received");
-            String received = new String(array);
-            Console.d(received);
-        } else {
-            Console.d("Waiting for hello from Bob...");
-            byte[] array = communicator.receiveBytes();
-            Console.d("Received: \"" + new String(array) + "\"");
+        // Step 1: Setup a shared secret key
+        Console.d(StringUtil.repeatedCharacter('=', 40));
+        Console.d("*** STEP 1 ***");
 
-            Console.d("Responding to server...");
-            communicator.sendBytes("Testing".getBytes());
+        communicator.exchangeSecretKey();
+
+        Console.d(StringUtil.repeatedCharacter('=', 40));
+        Console.d("*** STEP 2 ***");
+
+        if (!communicator.isServer()) {  // I'm Alice
+            // Step 2: Alice sends AES encrypted message (30 bytes)
+            byte[] message = AESEncryptionUtil.generateRandomMessage(30);
+            Console.d("Alice will send (unencrypted): %s", Base64.getEncoder().encodeToString(message));
+
+            byte[] encryptedMessage = AESEncryptionUtil.encryptMessage(message);
+            communicator.sendBytes(encryptedMessage);
+
+        } else {    // I'm Bob
+            // Step 2: Alice sends AEX
+            byte[] encryptedMessage = communicator.receiveBytes();
+            byte[] decryptedMessage = AESEncryptionUtil.decryptMessage(encryptedMessage);
+
+            Console.d("Bob received (unencrypted): %s", Base64.getEncoder().encodeToString(decryptedMessage));
         }
-        // Testing Communication TODO: Remove this section
 
-        
+        Console.d(StringUtil.repeatedCharacter('=', 40));
+        Console.d("*** STEP 3 ***");
+
+        if (!communicator.isServer()) {
+            // Step 3: Alice sends a 40 byte message, followed by its HMAC.
+
+            byte[] message = AESEncryptionUtil.generateRandomMessage(40);
+            Console.d("Alice will send message: %s", Base64.getEncoder().encodeToString(message));
+
+            byte[] messageHMAC = SHA256Util.getHMAC(message);
+            Console.d("Alice computed HMAC: %s", Base64.getEncoder().encodeToString(messageHMAC));
+
+            communicator.sendBytes(message);
+            communicator.sendBytes(messageHMAC);
+        } else {
+            byte[] receivedMessage = communicator.receiveBytes();
+            byte[] receivedHMAC = communicator.receiveBytes();
+
+            byte[] computedHMAC = SHA256Util.getHMAC(receivedMessage);
+
+            boolean hashesMatch = SHA256Util.messagesEqual(receivedHMAC, computedHMAC);
+
+            Console.d("Bob received message: %s", Base64.getEncoder().encodeToString(receivedMessage));
+            Console.d("Bob received HMAC: %s", StringUtil.bytesToHex(receivedHMAC));
+            Console.d("Bob computed HMAC: %s", StringUtil.bytesToHex(computedHMAC));
+            Console.d("Messages are %s", hashesMatch ? "THE SAME" : "NOT THE SAME");
+        }
+
+        Console.d(StringUtil.repeatedCharacter('=', 40));
+        Console.d("*** STEP 4 ***");
+
+        if (!communicator.isServer()) {
+
+        } else {
+
+        }
 
         communicator.close();
 

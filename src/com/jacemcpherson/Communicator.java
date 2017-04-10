@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Base64;
 
 public class Communicator {
 
@@ -106,8 +107,42 @@ public class Communicator {
         return mSocket;
     }
 
-    public void exchangePublicKeys() {
+    public void exchangeRSAPublicKey() {
+        // server will send first
+        if (isServer()) {
+            Console.d("Bob is sending his public key");
+            sendBytes(RSAEncryptionUtil.getPublicKeyEncoded());
+            Console.d("Bob is receiving Alice's public key");
+            byte[] otherPublic = receiveBytes();
+            RSAEncryptionUtil.decodePublicKey(otherPublic);
+        } else {
+            Console.d("Alice is receiving Bob's public key");
+            byte[] otherPublic = receiveBytes();
+            RSAEncryptionUtil.decodePublicKey(otherPublic);
+            Console.d("Alice is sending her public key");
+            sendBytes(RSAEncryptionUtil.getPublicKeyEncoded());
+        }
+    }
 
+    public void exchangeSecretKey() {
+        // Bob (server) will receive the secret key, decrypt
+        if (isServer()) {
+            byte[] encryptedKey = receiveBytes();
+            byte[] secretKeyEncoded = RSAEncryptionUtil.decryptMessage(encryptedKey);
+
+            String receivedKey = Base64.getEncoder().encodeToString(secretKeyEncoded);
+            Console.d("Bob received secret key: %s", receivedKey);
+
+            AESEncryptionUtil.decodeSecretKey(secretKeyEncoded);
+        } else { // Alice (client) will generate and send her secret key
+            byte[] secretKeyEncoded = AESEncryptionUtil.getSecretKeyEncoded();
+            byte[] encryptedKey = RSAEncryptionUtil.encryptMessage(secretKeyEncoded);
+
+            String sentKey = Base64.getEncoder().encodeToString(secretKeyEncoded);
+            Console.d("Alice sent secret key: %s", sentKey);
+
+            sendBytes(encryptedKey);
+        }
     }
 
     public void close() {
@@ -147,7 +182,7 @@ public class Communicator {
                 String lengthString = getLengthString(bytes.length);
                 mSocket.getOutputStream().write(lengthString.getBytes());
                 mSocket.getOutputStream().write(bytes);
-                Console.d("Sent: %s", new String(bytes));
+//                Console.d("Sent: %s", Base64.getEncoder().encodeToString(bytes));
             } catch (Exception e) {
                 Console.exception(e);
             }
