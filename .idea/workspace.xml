@@ -2,14 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="63ad4347-f555-453d-8af3-56dfad829fec" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/dictionaries/jacemcpherson.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/com/jacemcpherson/AESEncryptionUtil.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/jacemcpherson/AESEncryption.java" afterPath="$PROJECT_DIR$/src/com/jacemcpherson/SHA256Util.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/com/jacemcpherson/RSAEncryption.java" afterPath="$PROJECT_DIR$/src/com/jacemcpherson/RSAEncryptionUtil.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/jacemcpherson/Communicator.java" afterPath="$PROJECT_DIR$/src/com/jacemcpherson/Communicator.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/jacemcpherson/Console.java" afterPath="$PROJECT_DIR$/src/com/jacemcpherson/Console.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/jacemcpherson/Main.java" afterPath="$PROJECT_DIR$/src/com/jacemcpherson/Main.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/jacemcpherson/StringUtil.java" afterPath="$PROJECT_DIR$/src/com/jacemcpherson/StringUtil.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/jacemcpherson/RSAEncryptionUtil.java" afterPath="$PROJECT_DIR$/src/com/jacemcpherson/RSAEncryptionUtil.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -22,11 +17,11 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Main.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Main.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/com/jacemcpherson/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="388">
-              <caret line="99" column="0" lean-forward="true" selection-start-line="99" selection-start-column="0" selection-end-line="99" selection-end-column="0" />
+            <state relative-caret-position="394">
+              <caret line="130" column="34" lean-forward="false" selection-start-line="130" selection-start-column="34" selection-end-line="130" selection-end-column="34" />
               <folding />
             </state>
           </provider>
@@ -46,7 +41,7 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Communicator.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="Communicator.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/jacemcpherson/Communicator.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="281">
@@ -87,8 +82,8 @@
       <file leaf-file-name="RSAEncryptionUtil.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/jacemcpherson/RSAEncryptionUtil.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="269">
-              <caret line="95" column="60" lean-forward="false" selection-start-line="95" selection-start-column="60" selection-end-line="95" selection-end-column="60" />
+            <state relative-caret-position="330">
+              <caret line="99" column="44" lean-forward="true" selection-start-line="99" selection-start-column="44" selection-end-line="99" selection-end-column="44" />
               <folding />
             </state>
           </provider>
@@ -116,16 +111,16 @@
       <list>
         <option value="$PROJECT_DIR$/src/com/jacemcpherson/RsaKey.java" />
         <option value="$PROJECT_DIR$/src/com/jacemcpherson/RsaEncryption.java" />
-        <option value="$PROJECT_DIR$/src/com/jacemcpherson/Console.java" />
         <option value="$PROJECT_DIR$/src/com/jacemcpherson/AESEncryption.java" />
         <option value="/Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home/jre/lib/jce.jar!/javax/crypto/spec/SecretKeySpec.class" />
         <option value="$PROJECT_DIR$/src/com/jacemcpherson/RSAEncryption.java" />
         <option value="$PROJECT_DIR$/src/com/jacemcpherson/AESEncryptionUtil.java" />
         <option value="$PROJECT_DIR$/src/com/jacemcpherson/StringUtil.java" />
-        <option value="$PROJECT_DIR$/src/com/jacemcpherson/Main.java" />
         <option value="$PROJECT_DIR$/src/com/jacemcpherson/SHA256Util.java" />
-        <option value="$PROJECT_DIR$/src/com/jacemcpherson/RSAEncryptionUtil.java" />
         <option value="$PROJECT_DIR$/src/com/jacemcpherson/Communicator.java" />
+        <option value="$PROJECT_DIR$/src/com/jacemcpherson/Console.java" />
+        <option value="$PROJECT_DIR$/src/com/jacemcpherson/RSAEncryptionUtil.java" />
+        <option value="$PROJECT_DIR$/src/com/jacemcpherson/Main.java" />
       </list>
     </option>
   </component>
@@ -805,13 +800,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/jacemcpherson/Console.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="17" column="23" lean-forward="false" selection-start-line="17" selection-start-column="23" selection-end-line="17" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_121.jdk/Contents/Home/src.zip!/java/io/Writer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="129">
@@ -898,6 +886,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/jacemcpherson/Console.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="8" column="46" lean-forward="false" selection-start-line="8" selection-start-column="46" selection-end-line="8" selection-end-column="46" />
+          <folding>
+            <element signature="e#394#395#0" expanded="true" />
+            <element signature="e#452#453#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/jacemcpherson/Communicator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="281">
+          <caret line="123" column="9" lean-forward="true" selection-start-line="123" selection-start-column="9" selection-end-line="123" selection-end-column="9" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/jacemcpherson/SHA256Util.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="344">
@@ -910,29 +919,19 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/jacemcpherson/Main.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="388">
-          <caret line="99" column="0" lean-forward="true" selection-start-line="99" selection-start-column="0" selection-end-line="99" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/jacemcpherson/RSAEncryptionUtil.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="269">
-          <caret line="95" column="60" lean-forward="false" selection-start-line="95" selection-start-column="60" selection-end-line="95" selection-end-column="60" />
+        <state relative-caret-position="330">
+          <caret line="99" column="44" lean-forward="true" selection-start-line="99" selection-start-column="44" selection-end-line="99" selection-end-column="44" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/jacemcpherson/Communicator.java">
+    <entry file="file://$PROJECT_DIR$/src/com/jacemcpherson/Main.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="281">
-          <caret line="123" column="9" lean-forward="true" selection-start-line="123" selection-start-column="9" selection-end-line="123" selection-end-column="9" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
+        <state relative-caret-position="394">
+          <caret line="130" column="34" lean-forward="false" selection-start-line="130" selection-start-column="34" selection-end-line="130" selection-end-column="34" />
+          <folding />
         </state>
       </provider>
     </entry>

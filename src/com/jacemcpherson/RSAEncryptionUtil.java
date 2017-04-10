@@ -48,11 +48,6 @@ public class RSAEncryptionUtil {
         }
     }
 
-    public static String decryptMessage(String partnerString) {
-        byte[] decrypted = decryptMessage(partnerString.getBytes());
-        return new String(decrypted);
-    }
-
     public static byte[] decryptMessage(byte[] partnerBytes) {
         try {
             Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding");
@@ -70,11 +65,6 @@ public class RSAEncryptionUtil {
         return null;
     }
 
-    public static String encryptString(String myString) {
-        byte[] encrypted = encryptMessage(myString.getBytes());
-        return new String(encrypted);
-    }
-
     public static byte[] encryptMessage(byte[] myBytes) {
         try {
             Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding");
@@ -88,6 +78,32 @@ public class RSAEncryptionUtil {
             Console.exception(e);
         }
         return null;
+    }
+
+    public static byte[] signMessage(byte[] message) {
+        try {
+            Signature privateSignature = Signature.getInstance("SHA256withRSA");
+            privateSignature.initSign(getPrivateKey());
+            privateSignature.update(message);
+
+            return privateSignature.sign();
+        } catch (Exception e) {
+            Console.exception(e);
+            return null;
+        }
+    }
+
+    public static boolean verifySignature(byte[] message, byte[] signature) {
+        try {
+            Signature publicSignature = Signature.getInstance("SHA256withRSA");
+            publicSignature.initVerify(getPartnerPublicKey());
+            publicSignature.update(message);
+
+            return publicSignature.verify(signature);
+        } catch (Exception e) {
+            Console.exception(e);
+            return false;
+        }
     }
 
     private static void generateRsaKeyPair() {

@@ -68,7 +68,7 @@ public class Main {
         Console.d(StringUtil.repeatedCharacter('=', 40));
         Console.d("*** STEP 3 ***");
 
-        if (!communicator.isServer()) {
+        if (!communicator.isServer()) { // I'm Alice
             // Step 3: Alice sends a 40 byte message, followed by its HMAC.
 
             byte[] message = AESEncryptionUtil.generateRandomMessage(40);
@@ -79,7 +79,7 @@ public class Main {
 
             communicator.sendBytes(message);
             communicator.sendBytes(messageHMAC);
-        } else {
+        } else {    // I'm Bob
             byte[] receivedMessage = communicator.receiveBytes();
             byte[] receivedHMAC = communicator.receiveBytes();
 
@@ -90,17 +90,45 @@ public class Main {
             Console.d("Bob received message: %s", Base64.getEncoder().encodeToString(receivedMessage));
             Console.d("Bob received HMAC: %s", StringUtil.bytesToHex(receivedHMAC));
             Console.d("Bob computed HMAC: %s", StringUtil.bytesToHex(computedHMAC));
-            Console.d("Messages are %s", hashesMatch ? "THE SAME" : "NOT THE SAME");
+            Console.d("Bob determined the message was %s", hashesMatch ? "NOT MODIFIED" : "MODIFIED");
         }
 
         Console.d(StringUtil.repeatedCharacter('=', 40));
         Console.d("*** STEP 4 ***");
 
-        if (!communicator.isServer()) {
+        if (!communicator.isServer()) { // I'm Alice
+            byte[] message = AESEncryptionUtil.generateRandomMessage(50);
+            byte[] hmac = SHA256Util.getHMAC(message);
+            byte[] signature = RSAEncryptionUtil.signMessage(hmac);
 
-        } else {
+            Console.d("Alice will send message: %s", Base64.getEncoder().encodeToString(message));
+            Console.d("Alice computed HMAC: %s", Base64.getEncoder().encodeToString(hmac));
+            Console.d("Alice signed: %s", Base64.getEncoder().encodeToString(signature));
 
+            communicator.sendBytes(message);
+            communicator.sendBytes(hmac);
+            communicator.sendBytes(signature);
+        } else {    // I'm Bob
+            byte[] receivedMessage = communicator.receiveBytes();
+            byte[] receivedHmac = communicator.receiveBytes();
+            byte[] receivedSignature = communicator.receiveBytes();
+
+            byte[] computedHmac = SHA256Util.getHMAC(receivedMessage);
+
+            boolean hashesMatch = SHA256Util.messagesEqual(receivedHmac, computedHmac);
+
+            boolean signatureValid = RSAEncryptionUtil.verifySignature(receivedHmac, receivedSignature);
+
+            Console.d("Bob received message: %s", Base64.getEncoder().encodeToString(receivedMessage));
+            Console.d("Bob received HMAC: %s", Base64.getEncoder().encodeToString(receivedHmac));
+            Console.d("Bob computed HMAC: %s", Base64.getEncoder().encodeToString(computedHmac));
+            Console.d("Bobe determined the message was %s", hashesMatch ? "NOT MODIFIED" : "MODIFIED");
+            Console.d("Bob received signature: %s", Base64.getEncoder().encodeToString(receivedSignature));
+            Console.d("Bob determined the signature is %s", signatureValid ? "VALID" : "NOT VALID");
         }
+
+        Console.d(StringUtil.repeatedCharacter('=', 40));
+        Console.d("*** CLOSING ***");
 
         communicator.close();
 

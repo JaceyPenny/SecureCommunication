@@ -6,10 +6,8 @@ import java.util.Scanner;
 
 public class Console {
 
-    private static SimpleDateFormat mFormatter = new SimpleDateFormat("dd MMM, hh:mm:ss.SSS");
-    private static Scanner mScanner = new Scanner(System.in);
-
-    private static boolean isAcceptingInput = true;
+    private static SimpleDateFormat sFormatter = new SimpleDateFormat("dd MMM, hh:mm:ss.SSS");
+    private static Scanner sScanner = new Scanner(System.in);
 
     public enum LogType {
         ERROR, DEBUG, INFO, WARNING
@@ -22,64 +20,56 @@ public class Console {
     public static void out(LogType type, String message, Object... args) {
         System.out.printf(
                 "%s | %s: %s\n> ",
-                mFormatter.format(new Date()),
+                sFormatter.format(new Date()),
                 type.toString(),
                 String.format(message, args)
         );
     }
 
-    public static void disableInput() {
-        isAcceptingInput = false;
-    }
-
-    public static void enableInput() {
-        isAcceptingInput = true;
-    }
-
     public static String getLine() {
-        String result = mScanner.nextLine();
+        String result = sScanner.nextLine();
         System.out.print("> ");
         return result;
     }
 
     public static String get() {
-        String result = mScanner.next();
+        String result = sScanner.next();
         System.out.print("> ");
         return result;
     }
 
     public static int getInt() {
-        int result = mScanner.nextInt();
+        int result = sScanner.nextInt();
         System.out.print("> ");
         return result;
     }
 
     public static double getDouble() {
-        double result = mScanner.nextDouble();
+        double result = sScanner.nextDouble();
         System.out.print("> ");
         return result;
     }
 
     public static long getLong() {
-        long result = mScanner.nextLong();
+        long result = sScanner.nextLong();
         System.out.print("> ");
         return result;
     }
 
     public static boolean getBoolean() {
-        boolean result = mScanner.nextBoolean();
+        boolean result = sScanner.nextBoolean();
         System.out.print("> ");
         return result;
     }
 
     public static float getFloat() {
-        float result = mScanner.nextFloat();
+        float result = sScanner.nextFloat();
         System.out.print("> ");
         return result;
     }
 
     public static boolean hasNext() {
-        return mScanner.hasNext();
+        return sScanner.hasNext();
     }
 
     public static void e(String message, Object... args) {
