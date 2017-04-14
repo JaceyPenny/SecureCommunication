@@ -1,12 +1,23 @@
 package com.jacemcpherson;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Base64;
 
+/**
+ * Provides a wrapper around Server/Client socket programming, simplifying the process of initializing/connecting
+ * to a server.
+ * <br><br>
+ * Users of this class should initialize a server using {@link #startServer()}. In a separate runtime, you
+ * can connect to this running server using {@link #startClient()}.
+ * <br><br>
+ * Using {@link #sendBytes(byte[])} and {@link #receiveBytes()} you can easily communicate byte streams between
+ * server and client over a single socket.
+ * <br><br>
+ * A level of security is added when users exchange RSA public keys (using {@link #exchangeRSAPublicKey()}, and
+ * subsequently {@link #exchangeSecretKey()} for message encryption using AES or other ciphers.
+ */
 public class Communicator {
 
     public static final String SERVER_IP = "127.0.0.1";
@@ -16,6 +27,10 @@ public class Communicator {
 
     private static Socket sConnectedSocket;
 
+    /**
+     * Starts a server on {@link #SERVER_IP}:{@link #SERVER_PORT} (defaults to localhost:9090)
+     * @return the resulting {@link Communicator}
+     */
     public static Communicator startServer() {
         if (sCommunicator != null && !sCommunicator.isServer()) {
             throw new RuntimeException("Cannot initialize server: Already initialized as client.");
@@ -34,6 +49,10 @@ public class Communicator {
         return sCommunicator;
     }
 
+    /**
+     * Starts a client (assuming a server is already running), connecting to {@link #SERVER_IP}:{@link #SERVER_PORT}
+     * @return the resulting {@link Communicator}
+     */
     public static Communicator startClient() {
         if (sCommunicator != null && sCommunicator.isServer()) {
             throw new RuntimeException("Cannot initialize client: Already initialized as server.");
@@ -56,6 +75,12 @@ public class Communicator {
         return sCommunicator;
     }
 
+    /**
+     * Tests if the server is open by creating a {@link Socket} and verifying that connection was successful.
+     * If connection succeeded, we hold onto that Socket, rather than closing the connection. This is in case the
+     * user wants to call {@link #startClient()}, then we do not have to reconnect to the server.
+     * @return <code>true</code> if the server is up on {@link #SERVER_IP}:{@link #SERVER_PORT}, <code>false</code> otherwise.
+     */
     public static boolean isServerOpen() {
         try {
             if (sConnectedSocket != null && sConnectedSocket.isConnected()) {
@@ -75,11 +100,13 @@ public class Communicator {
     private ServerSocket mServerSocket;
     private Socket mSocket;
 
-    private BufferedReader mSocketReader;
-    private PrintWriter mSocketWriter;
-
     private boolean mIsServer;
 
+    /**
+     * Constructs a new Communicator.
+     * @param isServer whether this communicator acts as the server or as a client
+     * @throws IOException if socket creation/connection is unsuccessful.
+     */
     public Communicator(boolean isServer) throws IOException {
         mIsServer = isServer;
         if (isServer) {
@@ -89,6 +116,9 @@ public class Communicator {
         }
     }
 
+    /**
+     * Blocks the current thread until the server accepts a connection from a client.
+     */
     public void waitForConnection() {
         if (isServer()) {
             try {
@@ -107,6 +137,9 @@ public class Communicator {
         return mSocket;
     }
 
+    /**
+     * Performs the exchange of RSA Public keys between a server and client pair.
+     */
     public void exchangeRSAPublicKey() {
         // server will send first
         if (isServer()) {
@@ -124,6 +157,10 @@ public class Communicator {
         }
     }
 
+    /**
+     * Performs the transfer of a secret key from the client to the server (i.e. server receives a generated
+     * key from the client).
+     */
     public void exchangeSecretKey() {
         // Bob (server) will receive the secret key, decrypt
         if (isServer()) {
@@ -145,6 +182,9 @@ public class Communicator {
         }
     }
 
+    /**
+     * Closes the connections made by this Communicator.
+     */
     public void close() {
         try {
             if (mSocket != null) {
@@ -167,10 +207,11 @@ public class Communicator {
         return mSocket != null;
     }
 
-    public boolean isConnectedServer() {
-        return isServer() && isConnected();
-    }
-
+    /**
+     * Sends the contents of "bytes" to the other party. The length of the stream is encoded as a String
+     * and padded to 8 characters. The bytes array is sent directly after those 8 bytes.
+     * @param bytes the data to send to the other party
+     */
     public void sendBytes(byte[] bytes) {
         if (bytes == null) {
             Console.d("bytes are null.");
@@ -191,10 +232,21 @@ public class Communicator {
         }
     }
 
+    /**
+     * Gets the String value for an int, then pads that String to 8 characters.
+     * @param length
+     * @return a String with length 8
+     */
     private static String getLengthString(int length) {
         return StringUtil.padded(length, 8);
     }
 
+    /**
+     * Receives a byte stream sent by the other party. The other party sends the first 8 bytes as the length
+     * of the message, encoded as a String. On the receiving end, we decode this String to an integer, then
+     * receive exactly that many bytes from the Socket InputStream.
+     * @return
+     */
     public byte[] receiveBytes() {
         if (isConnected()) {
             try {

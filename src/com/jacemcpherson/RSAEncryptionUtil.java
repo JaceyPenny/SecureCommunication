@@ -8,6 +8,18 @@ import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 
+/**
+ * This class provides quick access to functionality such as:<br>
+ * * Generating an RSA public/private key pair.
+ * * Encoding/decoding RSA public keys
+ * * Encrypting messages using partner RSA public key
+ * * Decrypting messages using RSA private key
+ * * Signing messages using RSA private key
+ * * Verifying signatures using partner RSA public key.
+ *
+ * <br><br>
+ * Key size is default to 2048 bits.
+ */
 public class RSAEncryptionUtil {
 
     private static int KEY_SIZE = 2048;

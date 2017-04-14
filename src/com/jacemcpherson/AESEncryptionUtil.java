@@ -6,6 +6,11 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.util.Random;
 
+/**
+ * A class for encrypting and decrypting messages using an AES cipher. This class also maintains the
+ * shared secret key between Alice and Bob, as well as provides methods for preparing that key for
+ * sending/receiving as a byte[] array.
+ */
 public class AESEncryptionUtil {
 
     private static SecretKey sSecretKey;
@@ -34,6 +39,11 @@ public class AESEncryptionUtil {
         setupCiphers();
     }
 
+    /**
+     * Encrypts a byte[] message using the shared secret key.
+     * @param inMessage
+     * @return "inMessage" encrypted with AES using {@link #sSecretKey}
+     */
     public static byte[] encryptMessage(byte[] inMessage) {
         if (!isInitialized()) {
             setupAES();
@@ -47,6 +57,11 @@ public class AESEncryptionUtil {
         }
     }
 
+    /**
+     * Decrypts a byte[] message using the shared secret key
+     * @param inMessage
+     * @return "inMessage" decrypted with AES using {@link #sSecretKey}
+     */
     public static byte[] decryptMessage(byte[] inMessage) {
         if (!isInitialized()) {
             setupAES();

@@ -6,6 +6,11 @@ import java.util.Arrays;
 
 public class SHA256Util {
 
+    /**
+     * Performs a hash of the message using SHA-256 with a secret key (which is stored in {@link AESEncryptionUtil}).
+     * @param message
+     * @return
+     */
     public static byte[] getHMAC(byte[] message) {
         try {
             SecretKey secretKey = AESEncryptionUtil.getSecretKey();
@@ -20,6 +25,12 @@ public class SHA256Util {
         }
     }
 
+    /**
+     * Compares two byte arrays for equality.
+     * @param message1
+     * @param message2
+     * @return whether message1 and message2 are equal.
+     */
     public static boolean messagesEqual(byte[] message1, byte[] message2) {
         return Arrays.equals(message1, message2);
     }

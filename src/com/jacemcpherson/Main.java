@@ -7,15 +7,17 @@ public class Main {
     public static void main(String[] args) {
         Console.init();
 
+        // the Communicator for this party (doesn't matter if it's server or client)
         Communicator communicator = null;
 
+        // As long as no server is up, we continue to ask the user if they're the server.
         while (communicator == null) {
             boolean isServerOpen = Communicator.isServerOpen();
 
-            if (isServerOpen) {
+            if (isServerOpen) { // server is up
                 Console.d("Other machine is server. Connecting...");
 
-                communicator = Communicator.startClient();
+                communicator = Communicator.startClient();  // because other machine is server, we are client
 
                 Console.d("Connected to " + communicator.getSocket().getInetAddress().toString() + ":" + communicator.getSocket().getPort());
             } else {
@@ -52,11 +54,11 @@ public class Main {
         if (!communicator.isServer()) {  // I'm Alice
             // Step 2: Alice sends AES encrypted message (30 bytes)
             byte[] message = AESEncryptionUtil.generateRandomMessage(30);
+            byte[] encryptedMessage = AESEncryptionUtil.encryptMessage(message);
+
             Console.d("Alice will send (unencrypted): %s", Base64.getEncoder().encodeToString(message));
 
-            byte[] encryptedMessage = AESEncryptionUtil.encryptMessage(message);
             communicator.sendBytes(encryptedMessage);
-
         } else {    // I'm Bob
             // Step 2: Alice sends AEX
             byte[] encryptedMessage = communicator.receiveBytes();
@@ -72,10 +74,10 @@ public class Main {
             // Step 3: Alice sends a 40 byte message, followed by its HMAC.
 
             byte[] message = AESEncryptionUtil.generateRandomMessage(40);
-            Console.d("Alice will send message: %s", Base64.getEncoder().encodeToString(message));
-
             byte[] messageHMAC = SHA256Util.getHMAC(message);
-            Console.d("Alice computed HMAC: %s", Base64.getEncoder().encodeToString(messageHMAC));
+
+            Console.d("Alice will send message: %s", Base64.getEncoder().encodeToString(message));
+            Console.d("Alice computed HMAC: %s", StringUtil.bytesToHex(messageHMAC));
 
             communicator.sendBytes(message);
             communicator.sendBytes(messageHMAC);
@@ -102,7 +104,7 @@ public class Main {
             byte[] signature = RSAEncryptionUtil.signMessage(hmac);
 
             Console.d("Alice will send message: %s", Base64.getEncoder().encodeToString(message));
-            Console.d("Alice computed HMAC: %s", Base64.getEncoder().encodeToString(hmac));
+            Console.d("Alice computed HMAC: %s", StringUtil.bytesToHex(hmac));
             Console.d("Alice signed: %s", Base64.getEncoder().encodeToString(signature));
 
             communicator.sendBytes(message);
@@ -116,13 +118,12 @@ public class Main {
             byte[] computedHmac = SHA256Util.getHMAC(receivedMessage);
 
             boolean hashesMatch = SHA256Util.messagesEqual(receivedHmac, computedHmac);
-
             boolean signatureValid = RSAEncryptionUtil.verifySignature(receivedHmac, receivedSignature);
 
             Console.d("Bob received message: %s", Base64.getEncoder().encodeToString(receivedMessage));
-            Console.d("Bob received HMAC: %s", Base64.getEncoder().encodeToString(receivedHmac));
-            Console.d("Bob computed HMAC: %s", Base64.getEncoder().encodeToString(computedHmac));
-            Console.d("Bobe determined the message was %s", hashesMatch ? "NOT MODIFIED" : "MODIFIED");
+            Console.d("Bob received HMAC: %s", StringUtil.bytesToHex(receivedHmac));
+            Console.d("Bob computed HMAC: %s", StringUtil.bytesToHex(computedHmac));
+            Console.d("Bob determined the message was %s", hashesMatch ? "NOT MODIFIED" : "MODIFIED");
             Console.d("Bob received signature: %s", Base64.getEncoder().encodeToString(receivedSignature));
             Console.d("Bob determined the signature is %s", signatureValid ? "VALID" : "NOT VALID");
         }

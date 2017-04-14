@@ -4,6 +4,21 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
 
+/**
+ * The Console class provides a way to log more verbosely. Specifically, log messages are more useful,
+ * in that they indicate the time at which they were logged, as well as the type of message being logged.
+ * <br><br>
+ * There are 4 types of log messages: ERROR, DEBUG, INFO, and WARNING. If using this class, users should
+ * avoid using System.out or other logging mechanisms as this may interfere with the formatting of certain
+ * messages. <br><br>
+ *
+ * <code>Console</code> is equipped with a {@link Scanner} as well, and you can gather user input using
+ * methods like <code>Console.</code>{@link Console#getLine()}.
+ *
+ * <br><br>To log exceptions, make use of <code>Console.</code>{@link Console#exception(Exception)}
+ *
+ * @author Jace McPherson
+ */
 public class Console {
 
     private static SimpleDateFormat sFormatter = new SimpleDateFormat("dd MMM, hh:mm:ss.SSS");
